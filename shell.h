@@ -1,5 +1,5 @@
-#ifndef MAIN_H
-#define MAIN_H
+#ifndef SHELL_H
+#define SHELL_H
 
 int _exec(char *command, char **cmd, char **env);
 void _exit_func(char **environ);
