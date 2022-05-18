@@ -1,4 +1,4 @@
-#include "main.h"
+#include "shell.h"
 /**
  * _prompt - write prompt and read a command line.
  * @myself: String for prompt init.
