@@ -1,32 +1,40 @@
 #include "main.h"
 /**
- * main - Simple Shell
- * @ac: Argument counter.
- * @av: Argument values.
- * @env: Environment variables.
+ * main - runs the shell program
  *
- * Return: 0 or -1 in failure.
+ * Return: 0 on success
  */
-int main(int ac, char **av, char **env)
+int main(void)
 {
-	/* char *shell_pharse; */
-	command_t **cmd_list = NULL;/* Command List */
-	char *path = NULL;
-	/* history_t **history = malloc(sizeof(history_t)); */
+    char *fullpathbuffer = NULL, *copy = NULL, *buffer = NULL;
+    char *PATH = NULL;
+    char **av;
+    int exitstatus = 0;
 
-	path = find_path(env);
-	ac++;
-	/* shell_pharse = isatty(STDIN_FILENO) ? "> " : NULL; */
-	while (1)
-	{
-		cmd_list = _prompt(av[0], av[1]); /* get commands from cmd_line */
-		if (cmd_list)
-		{
-			if (_fork(av[0], *cmd_list, path, env))
-				error_handler(av[0], 102);
-		}
-		else
-			error_handler(av[0], 103);
-	}
-	return (0);
+    signal(SIGINT, SIG_IGN);
+    PATH = _getenv("PATH");
+    if (PATH == NULL)
+        return (-1);
+    while (1)
+    {
+        av = NULL;
+        prompt();
+        buffer = _read();
+        if (*buffer != '\0')
+        {
+            av = tokenize(buffer);
+            if (av == NULL)
+            {
+                free(buffer);
+                continue;
+            }
+            fullpathbuffer = _fullpathbuffer(av, PATH, copy);
+            if (checkbuiltins(av, buffer, exitstatus) == 1)
+                continue;
+            exitstatus = _forkprocess(av, buffer, fullpathbuffer);
+        }
+        else
+            free(buffer);
+    }
+    return (0);
 }
